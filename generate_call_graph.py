@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os, argparse, json, re
 from command import *
+from common.utils import merge_two_dicts
 
 def get_methods(classpath, dirset):
     '''get all methods of a class along with the methods's label'''
@@ -78,14 +79,12 @@ def generate(apkpath):
     # 4. connect all in-comming neighbors
 
     # Decompile apk
-    print('[SC]Decompiling %s...' % apkpath)
     DA_clean()
     DA_move_file(apkpath, os.path.join('workspace', 'test.apk'))
     DA_unzip()
     DA_baksmali()
 
     # Iterate through all classes
-    print('[SC]Iterating through all classes...')
     dirset = get_dirset()
     cg = dict()
     for parent, dirnames, filenames in os.walk(os.path.join('workspace', 'smali')):
@@ -93,7 +92,8 @@ def generate(apkpath):
             if filename.endswith('.smali'):
                 classpath = os.path.join(parent, filename)
                 methods = get_methods(classpath, dirset)
-                cg = {**cg, **methods} # merge two dict
+                # cg = {**cg, **methods} # merge two dict
+                cg = merge_two_dicts(cg, methods) # merge two dict
 
     # Make cg undirected
     # print('[SC]Making graph undirected...')
@@ -112,7 +112,6 @@ def generate(apkpath):
                     cg[neighbor]['in_neighbors'].append(src)
         cg[src]['out_neighbors'] = legal_neighbors
 
-    print('[SC]Call graph generation completed')
     apkname = os.path.basename(os.path.normpath(apkpath)).split('.')[0]
     if not os.path.isdir(os.path.join(os.path.split(apkpath)[0], 'cg')):
         os.mkdir(os.path.join(os.path.split(apkpath)[0], 'cg'))
@@ -122,7 +121,6 @@ def generate(apkpath):
     return cg, graphdir
 
 def save_to_file(cg, graphdir):
-    print('[SC]Call graph saved as %s/%s' % (graphdir, 'directed_cg.json'))
     f = open(os.path.join(graphdir, 'directed_cg.json'), 'w')
     json.dump(cg, f)
     f.close()

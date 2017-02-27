@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse, json, os
 from generate_call_graph import generate
@@ -28,7 +28,7 @@ def neighborhood_hash(cg, graphdir):
     #   2.2 XOR for all in-comming neighbors, then 2-bits ROT, result marked as i
     #   2.3 XOR for all out-going neighbors, then 3-bits ROT, result marked as o
     #   2.4 the final label nhash = n XOR i XOR o
-    print('[SC]Neighborhood hashing...')
+
     hash_cg = cg
     for node in cg:
         # print('[SC]Hashing node %s' % node)
@@ -44,7 +44,7 @@ def neighborhood_hash(cg, graphdir):
                 xor_label = string_xor(xor_label, cg[cg[node]['out_neighbors'][i]]['label'])
             rot_label = string_xor(rot_label, string_rot(xor_label, 3))
         hash_cg[node]['nhash'] = rot_label
-    print('[SC]Neighborhood hash completed')
+
     return hash_cg
 
 def save_to_file(hash_cg, graphdir):
@@ -52,7 +52,6 @@ def save_to_file(hash_cg, graphdir):
     f = open(os.path.join(graphdir, 'directed_hcg.json'), 'w')
     json.dump(hash_cg, f)
     f.close()
-    print('[SC]Hashed call graph stored in /%s/directed_hcg.json' % graphdir)
 
 def main():
     parser = argparse.ArgumentParser()
