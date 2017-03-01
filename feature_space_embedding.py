@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json, argparse, os, arff
-from count_hash import get_hash
-from common.utils import use_progressbar
+from count_hash import get_hash, count
+from common.utils import use_progressbar, count_file
 
 def embed(hcgpath, N, M, hash_value_list):
     '''embed the hashed call graph into a sparse vector space, the dimension is N*M'''
@@ -27,7 +27,8 @@ def embed_all(directory, N, M, hash_value_list):
     # 3. add up all the vectors to a matrix
 
     # progressbar
-    pbar = use_progressbar('Start embedding...', 1260)
+    file_count = count_file(directory, '_hcg.json')
+    pbar = use_progressbar('Start embedding...', file_count)
     pbar.start()
     progress = 0
 
@@ -40,7 +41,7 @@ def embed_all(directory, N, M, hash_value_list):
                 category = os.path.basename(os.path.split(os.path.split(parent)[0])[0])
                 category_set.add(category)
                 vector = embed(os.path.join(parent, filename), N, M, hash_value_list)
-                vector.append(str(N) + ' ' + category)
+                vector.append(str(N*M) + ' ' + category)
                 matrix.append(vector)
 
                 # progressbar
@@ -88,17 +89,15 @@ def save_to_file(hash_value_list, directory):
         f.write(hash_value + '\n')
     f.close()
 
-def get_hash_occurrence(hopath):
+def get_hash_occurrence(directory):
     '''get the occurrence of all the difference hash values'''
-    # 1. read hash occurrence dict(hod) from hash_occurrence.json file
+    # 1. count hash occurrence
     # 2. get the total numbers of hash values as N
     # 3. get the maximum occurrence of hash values as M
     # 4. get all the different hash values as hash_list
 
-    # Load hash occurrence dict(hod)
-    f = open(hopath, 'r')
-    hod = json.load(f)
-    f.close()
+    # Count hash occurrence(hod)
+    hod = count(directory)
 
     # Get N
     N = len(hod)
@@ -116,10 +115,10 @@ def get_hash_occurrence(hopath):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--directory', help='directory of the hcg file')
-    parser.add_argument('-p', '--hopath', help='path of the hash occurrence file')
+    # parser.add_argument('-p', '--hopath', help='path of the hash occurrence file')
     args = parser.parse_args()
-    if args.directory and args.hopath:
-        N, M, hash_value_list = get_hash_occurrence(args.hopath)
+    if args.directory:
+        N, M, hash_value_list = get_hash_occurrence(args.directory)
         matrix, category_set = embed_all(args.directory, N, M, hash_value_list)
         save_to_arff(matrix, hash_value_list, category_set, args.directory)
         # save_to_file(hash_value_list, args.directory)

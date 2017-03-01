@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os, argparse, json
+from common.utils import use_progressbar, count_file
 
 def merge_hash_dict(d1, d2):
     '''merge d1 into d2'''
@@ -42,12 +43,27 @@ def count(directory):
     # 1. iterate through all the hcg.json files
     # 2. get hash values from a hcg.json file
     # 3. merge the hash values into one file
+
+    # progressbar
+    file_count = count_file(directory, '_hcg.json')
+    pbar = use_progressbar('Calculating maximum occurrence', file_count)
+    pbar.start()
+    progress = 0
+
     hash_dict = dict()
     for parent, dirnames, filenames in os.walk(directory):
         for filename in filenames:
             if filename == 'directed_hcg.json':
             # if filename == 'hcg.json':
                 hash_dict = merge_hash_dict(get_hash(os.path.join(parent, filename)), hash_dict)
+
+                # progressbar
+                progress += 1
+                pbar.update(progress)
+
+    # progressbar
+    pbar.finish()
+
     return hash_dict
 
 def has_hash_and_occurrence(hash_dict, hash_value, occurrence):
