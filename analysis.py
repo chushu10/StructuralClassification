@@ -68,17 +68,14 @@ class Analysis:
         self.predictions = []
         self.true_labels = []
 
-        if precomputed_matrix:
-            # Load the y labels and file names from zip pickle objects.
-            print "[SC] Loading matrix..."
-            self.X = pz.load(precomputed_matrix)
-            print "[SC] matrix loaded"
-            self.Y = pz.load(y)
-            print "[SC] labels loaded"
-            self.fnames = pz.load(fnames)
-            print "[SC] file names loaded"
-        else:
-            print '[SC] I don\'t wanna do it again'
+        # Load the y labels and file names from zip pickle objects.
+        print "[SC] Loading matrix..."
+        self.X = pz.load(precomputed_matrix)
+        print "[SC] matrix loaded"
+        self.Y = pz.load(y)
+        print "[SC] labels loaded"
+        self.fnames = pz.load(fnames)
+        print "[SC] file names loaded"
             
     ################################
     # Data Preprocessing functions #
