@@ -234,14 +234,19 @@ class Analysis:
         self.true_labels = np.array([])
         self.predictions = np.array([])
         for i in xrange(iterations):
+            print "[*] Iteration {0}".format(i)
+            print "[*] Randomizing dataset..."
             self.randomize_dataset_closed_world()
             clf = GridSearchCV(svm.LinearSVC(), {'C': np.logspace(-3, 3, 7)})
+            print "[*] Training..."
             clf.fit(self.X_train, self.Y_train)
             out = clf.best_estimator_.predict(self.X_test)
+            print "[*] Testing..."
             self.predictions = np.append(self.predictions, out)
             self.true_labels = np.append(self.true_labels, self.Y_test)
 
         if save:
+            print "[*] Predictions saved."
             pz.save(self.predictions, "mca_predictions_closed.pz")
             pz.save(self.true_labels, "mca_true_labels_closed.pz")
 
