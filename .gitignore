@@ -4,3 +4,4 @@ apk/
 __pycache__/
 *.pyc
 *.pz
+history/
