@@ -12,7 +12,7 @@ import collections, os, time
 import numpy as np
 import matplotlib.pyplot as plt
 from random import shuffle
-from progressbar import *
+# from progressbar import *
 from sklearn import svm
 from sklearn.grid_search import GridSearchCV
 
