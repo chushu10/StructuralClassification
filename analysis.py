@@ -3,10 +3,10 @@
 # analysis.py >> Load dataset, train, predict and evaluate  
 # Copyright (c) 2015 Hugo Gascon <hgascon@mail.de>
 
-import adagio.common.ml as ml
-import adagio.common.eval as ev
-import adagio.core.instructionSet as instructionSet
-import adagio.common.pz as pz
+import common.ml as ml
+import common.eval as ev
+# import adagio.core.instructionSet as instructionSet
+import common.pz as pz
 
 import collections, os, time
 import numpy as np
@@ -336,42 +336,42 @@ class Analysis:
         plt.grid(True)
         plt.savefig(filename, format='png')
 
-    def get_high_ranked_neighborhoods(self, fcg_file,
-                                      sorted_weights_idx, n_weights=3):
-        """
-        Retrieve the neighborhoods in a hashed graph with maximum weights.
-        n_weights: 
+    # def get_high_ranked_neighborhoods(self, fcg_file,
+    #                                   sorted_weights_idx, n_weights=3):
+    #     """
+    #     Retrieve the neighborhoods in a hashed graph with maximum weights.
+    #     n_weights: 
 
-        :param fcg_file: path of file containing a fcg
-        :param sorted_weights_idx: index that sort the weights from the
-                linear classifier
-        :param n_weights: number of weights with maximum value to retrieve
-                the associated neighborhoods
-        :returns: a list of matching neighborhoods.
-        """
-        # g = FCG.build_fcg(fcg_file)
-        g = pz.load(fcg_file)
-        g_hash = ml.neighborhood_hash(g)
-        bits = len(instructionSet.INSTRUCTION_CLASS_COLOR)
+    #     :param fcg_file: path of file containing a fcg
+    #     :param sorted_weights_idx: index that sort the weights from the
+    #             linear classifier
+    #     :param n_weights: number of weights with maximum value to retrieve
+    #             the associated neighborhoods
+    #     :returns: a list of matching neighborhoods.
+    #     """
+    #     # g = FCG.build_fcg(fcg_file)
+    #     g = pz.load(fcg_file)
+    #     g_hash = ml.neighborhood_hash(g)
+    #     bits = len(instructionSet.INSTRUCTION_CLASS_COLOR)
 
-        neighborhoods = []
-        remaining_weights = n_weights
+    #     neighborhoods = []
+    #     remaining_weights = n_weights
 
-        for idx in sorted_weights_idx:
-            if remaining_weights > 0:
-                label_decimal = idx / self.b
-                label_bin = np.binary_repr(label_decimal, bits)
-                label = np.array([int(i) for i in label_bin])
-                matching_neighborhoods = []
-                for m, nh in g_hash.node.iteritems():
-                    if np.array_equal(nh["label"], label):
-                        neighborhood = "{0} {1}.{2}({3})".format(remaining_weights,
-                                                                 m[0], m[1], m[2])
-                        matching_neighborhoods.append(neighborhood)
-                if matching_neighborhoods:
-                    remaining_weights -= 1
-                    neighborhoods += matching_neighborhoods
-            else:
-                del g
-                del g_hash
-                return neighborhoods
+    #     for idx in sorted_weights_idx:
+    #         if remaining_weights > 0:
+    #             label_decimal = idx / self.b
+    #             label_bin = np.binary_repr(label_decimal, bits)
+    #             label = np.array([int(i) for i in label_bin])
+    #             matching_neighborhoods = []
+    #             for m, nh in g_hash.node.iteritems():
+    #                 if np.array_equal(nh["label"], label):
+    #                     neighborhood = "{0} {1}.{2}({3})".format(remaining_weights,
+    #                                                              m[0], m[1], m[2])
+    #                     matching_neighborhoods.append(neighborhood)
+    #             if matching_neighborhoods:
+    #                 remaining_weights -= 1
+    #                 neighborhoods += matching_neighborhoods
+    #         else:
+    #             del g
+    #             del g_hash
+    #             return neighborhoods
