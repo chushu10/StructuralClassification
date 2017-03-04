@@ -117,15 +117,16 @@ def embed_all(directory):
     print '[SC] Converting features vectors to binary...'
     matrix, m = ml.make_binary(matrix)
 
-    return matrix, truth_label, filename_list
+    return matrix, m, truth_label, filename_list
 
-def save_data(X, Y, filenames):
+def save_data(X, m, Y, filenames):
     '''Store pz objects for the data matrix, the labels and
         the name of the original samples so that they can be used
         in a new experiment without the need to extract all
         features again'''
     print '[SC] Saving labels, data matrix and file names...'
     pz.save(X, 'X.pz')
+    pz.save(m, 'maximun.pz')
     pz.save(Y, 'Y.pz')
     pz.save(filenames, 'filenames.pz')
 
@@ -134,8 +135,8 @@ def main():
     parser.add_argument('-d', '--directory', help='directory of the hcg file')
     args = parser.parse_args()
     if args.directory:
-        matrix, truth_label, filename_list = embed_all(args.directory)
-        save_data(matrix, truth_label, filename_list)
+        matrix, m, truth_label, filename_list = embed_all(args.directory)
+        save_data(matrix, m, truth_label, filename_list,)
     else:
         parser.print_help()
 
