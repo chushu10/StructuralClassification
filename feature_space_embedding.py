@@ -7,6 +7,38 @@ import json, argparse, os, arff
 from count_hash import get_hash, count
 from common.utils import use_progressbar, count_file
 
+def remove_emtpy_hcg(directory):
+    # progressbar
+    file_count = count_file(directory, '_hcg.json')
+    pbar = use_progressbar('Removing empty hcgs...', file_count)
+    pbar.start()
+    progress = 0
+
+    emtpy_hcg_list = []
+    count = 0
+    for parent, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            if filename == 'directed_hcg.json':
+            # if filename == 'hcg.json':
+                hcg_file = os.path.join(parent, filename)
+                statinfo = os.stat(hcg_file)
+                hcg_size = statinfo.st_size
+                if hcg_size <= 2:
+                    emtpy_hcg_list.append(hcg_file)
+                    count += 1
+                    os.remove(hcg_file)
+
+                # progressbar
+                progress += 1
+                pbar.update(progress)
+
+    # progressbar
+    pbar.finish()
+
+    print '[SC] Removed %d empty hcgs' % count
+    for emtpy_hcg in emtpy_hcg_list:
+        print empty_hcg
+
 def compute_label_histogram(hcgpath):
     '''compute the histogram of nhashs in hashed call graph. Every label is a
        binary array. The histogram length is 2**len(nhashs)'''
