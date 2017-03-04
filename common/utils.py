@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from progressbar import *
-import os
+import os, json
 
 def use_progressbar(title, maxval, marker='#', left='[', right=']'):
     '''return a progressbar obj'''
@@ -26,3 +26,12 @@ def count_file(directory, extension):
             if filename.endswith(extension):
                 count += 1
     return count
+
+def read_hashed_call_graph(hcgpath):
+    '''read hashed call graph from file'''
+    # Load hcg
+    f = open(hcgpath, 'r')
+    hcg = json.load(f)
+    f.close()
+
+    return hcg

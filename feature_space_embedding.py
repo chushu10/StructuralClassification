@@ -4,8 +4,7 @@ import numpy as np
 import common.ml as ml
 import common.pz as pz
 import json, argparse, os, arff
-from count_hash import get_hash, count
-from common.utils import use_progressbar, count_file
+from common.utils import use_progressbar, count_file, read_hashed_call_graph
 
 def remove_emtpy_hcg(directory):
     # progressbar
@@ -39,14 +38,13 @@ def remove_emtpy_hcg(directory):
     for empty_hcg in emtpy_hcg_list:
         print empty_hcg
 
-def compute_label_histogram(hcgpath):
+def compute_label_histogram(hcg):
     '''compute the histogram of nhashs in hashed call graph. Every label is a
        binary array. The histogram length is 2**len(nhashs)'''
-    hcg_hash_dict = get_hash(hcgpath)
-    nhashs = [node for node in hcg_hash_dict]
-    h = np.zeros(2 ** len(nhashs[0]))
-    for nhash in nhashs:
-        h[int(''.join([str(i) for i in nhash]), base=2)] += 1
+    labels = [node['nhash'] for node in hcg]
+    h = np.zeros(2 ** len(labels[0]))
+    for l in labels:
+        h[int(''.join([str(i) for i in l]), base=2)] += 1
     return h
 
 def get_categories(directory):
@@ -101,7 +99,8 @@ def embed_all(directory):
             # if filename == 'hcg.json':
                 category = os.path.basename(os.path.split(os.path.split(parent)[0])[0])
                 truth_label = np.append(truth_label, category_dict[category])
-                x_i = compute_label_histogram(os.path.join(parent, filename))
+                hcg = read_hashed_call_graph(os.path.join(parent, filename))
+                x_i = compute_label_histogram(hcg)
                 matrix.append(x_i)
                 filename_list.append(os.path.split(parent)[1])
 
@@ -113,9 +112,11 @@ def embed_all(directory):
     pbar.finish()
 
     # 3. convert matrix to binary
+    print '[SC] Converting python list to numpy matrix...'
     matrix = np.array(matrix, dtype=np.int16)
-    print '[SC] Converting features vectors to binary...'
-    matrix, m = ml.make_binary(matrix)
+    m = 0
+    # print '[SC] Converting features vectors to binary...'
+    # matrix, m = ml.make_binary(matrix)
 
     return matrix, m, truth_label, filename_list
 
