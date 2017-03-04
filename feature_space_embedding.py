@@ -41,10 +41,10 @@ def remove_emtpy_hcg(directory):
 def compute_label_histogram(hcg):
     '''compute the histogram of nhashs in hashed call graph. Every label is a
        binary array. The histogram length is 2**len(nhashs)'''
-    labels = [node['nhash'] for node in hcg]
+    labels = [hcg[node]['nhash'] for node in hcg]
     h = np.zeros(2 ** len(labels[0]))
     for l in labels:
-        h[int(''.join([str(i) for i in l]), base=2)] += 1
+        h[int(l, base=2)] += 1
     return h
 
 def get_categories(directory):
@@ -114,9 +114,8 @@ def embed_all(directory):
     # 3. convert matrix to binary
     print '[SC] Converting python list to numpy matrix...'
     matrix = np.array(matrix, dtype=np.int16)
-    m = 0
-    # print '[SC] Converting features vectors to binary...'
-    # matrix, m = ml.make_binary(matrix)
+    print '[SC] Converting features vectors to binary...'
+    matrix, m = ml.make_binary(matrix)
 
     return matrix, m, truth_label, filename_list
 
