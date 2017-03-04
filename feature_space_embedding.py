@@ -126,7 +126,7 @@ def save_data(X, m, Y, filenames):
         features again'''
     print '[SC] Saving labels, data matrix and file names...'
     pz.save(X, 'X.pz')
-    pz.save(m, 'maximun.pz')
+    pz.save(m, 'maximum.pz')
     pz.save(Y, 'Y.pz')
     pz.save(filenames, 'filenames.pz')
 

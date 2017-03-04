@@ -21,7 +21,7 @@ class Analysis:
     """ A class to run a classification experiment """
 
     def __init__(self, dirs, labels, split, max_files=0, max_node_size=0, 
-                 precomputed_matrix="X.pz", y="Y.pz", fnames="filenames.pz"):
+                 precomputed_matrix="X.pz", maximum="maximum.pz", y="Y.pz", fnames="filenames.pz"):
         """ 
         The Analysis class allows to load sets of pickled graoh objects
         from different directories where the objects in each directory
@@ -76,6 +76,8 @@ class Analysis:
         print "[SC] labels loaded"
         self.fnames = pz.load(fnames)
         print "[SC] file names loaded"
+        self.b = pz.load(maximum)
+        print "[SC] maximum loaded"
             
     ################################
     # Data Preprocessing functions #
