@@ -135,6 +135,7 @@ def main():
     parser.add_argument('-d', '--directory', help='directory of the hcg file')
     args = parser.parse_args()
     if args.directory:
+        remove_emtpy_hcg(args.directory)
         matrix, m, truth_label, filename_list = embed_all(args.directory)
         save_data(matrix, m, truth_label, filename_list,)
     else:
