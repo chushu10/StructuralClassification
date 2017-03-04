@@ -36,7 +36,7 @@ def remove_emtpy_hcg(directory):
     pbar.finish()
 
     print '[SC] Removed %d empty hcgs' % count
-    for emtpy_hcg in emtpy_hcg_list:
+    for empty_hcg in emtpy_hcg_list:
         print empty_hcg
 
 def compute_label_histogram(hcgpath):
