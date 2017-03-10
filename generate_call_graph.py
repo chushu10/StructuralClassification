@@ -3,6 +3,9 @@
 import os, argparse, json, re
 from command import *
 from common.utils import merge_two_dicts
+from smali_opcode import INSTRUCTION_SET_COLOR
+from smali_opcode import INSTRUCTION_CLASSES
+from smali_opcode import INSTRUCTION_CLASS_COLOR
 
 def get_methods(classpath, dirset):
     '''get all methods of a class along with the methods's label'''
@@ -13,10 +16,6 @@ def get_methods(classpath, dirset):
     # 3. when '.end method' occurs in the line, end recording the method
     f = open(classpath, 'r')
     lines = f.read().splitlines()
-    f.close()
-
-    f = open('smali_opcode.json', 'r')
-    labels = json.load(f)
     f.close()
 
     methods = dict()
@@ -30,7 +29,7 @@ def get_methods(classpath, dirset):
             method_name = classpath[16:-6] + ';->' + line[0:line.find(')')+1].split()[-1]
             methods[method_name] = {}
             methods[method_name]['label'] = ''
-            label = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            label = [0] * len(INSTRUCTION_CLASSES)
             # methods[method_name]['apis'] = []
             methods[method_name]['out_neighbors'] = []
             methods[method_name]['in_neighbors'] = []
@@ -52,7 +51,7 @@ def get_methods(classpath, dirset):
                 indent = len(line) - len(line.lstrip())
                 if (re.match(r'[a-z]', opcode[0])) and (indent == 4):
                     # print("indent: %d, %s" % (len(line) - len(line.lstrip()), opcode))
-                    label[labels[opcode]] = 1
+                    label[INSTRUCTION_SET_COLOR[opcode]] = 1
     return methods
 
 def get_dirset():
