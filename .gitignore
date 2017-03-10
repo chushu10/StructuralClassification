@@ -6,3 +6,4 @@ __pycache__/
 *.pz
 history/
 *.json
+*.txt
