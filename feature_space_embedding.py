@@ -176,14 +176,12 @@ def save_as_arff(X, Y):
     nh = ''
     for i in range(int(math.log(M, 2))):
         nh += '0'
-    f.write('@attribute ' + nh + ' numeric\n')
     for i in range(M):
-        nh = binary_add(nh, '1')
         f.write('@attribute ' + nh + ' numeric\n')
+        nh = binary_add(nh, '1')
     f.write('@attribute classes {')
     cnt = 0
     for category in category_set:
-        print category
         if cnt < len(category_set) - 1:
             f.write(category + ',')
         else:
