@@ -6,6 +6,7 @@ from common.utils import merge_two_dicts
 from smali_opcode import INSTRUCTION_SET_COLOR
 from smali_opcode import INSTRUCTION_CLASSES
 from smali_opcode import INSTRUCTION_CLASS_COLOR
+from smali_opcode import CG_FILE_NAME
 
 def get_methods(classpath, dirset):
     '''get all methods of a class along with the methods's label'''
@@ -120,7 +121,7 @@ def generate(apkpath):
     return cg, graphdir
 
 def save_to_file(cg, graphdir):
-    f = open(os.path.join(graphdir, 'directed_cg.json'), 'w')
+    f = open(os.path.join(graphdir, CG_FILE_NAME), 'w')
     json.dump(cg, f)
     f.close()
 

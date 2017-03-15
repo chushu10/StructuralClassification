@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse, json, os
 from generate_call_graph import generate
+from smali_opcode import HCG_FILE_NAME
 
 def string_xor(s1, s2):
     '''bitwise exlusive or(XOR) of two strings'''
@@ -49,7 +50,7 @@ def neighborhood_hash(cg, graphdir):
 
 def save_to_file(hash_cg, graphdir):
     # Dump hash_cg to json file
-    f = open(os.path.join(graphdir, 'directed_hcg.json'), 'w')
+    f = open(os.path.join(graphdir, HCG_FILE_NAME), 'w')
     json.dump(hash_cg, f)
     f.close()
 

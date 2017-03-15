@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# HCG_FILE_NAME = 'directed_hcg_19bit.json'
+# CG_FILE_NAME = 'directed_cg_19bit.json'
+
 # INSTRUCTION_CLASS_COLOR = {
 #     'nop': 0,
 #     'move': 1,
@@ -307,6 +310,9 @@
 #     'mul-int/2addr': 16,
 #     'execute-inline/range': 18
 # }
+
+HCG_FILE_NAME = 'directed_hcg_15bit.json'
+CG_FILE_NAME = 'directed_cg_15bit.json'
 
 INSTRUCTION_CLASS_COLOR = {
     'nop': 0,
