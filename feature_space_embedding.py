@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import math
 import numpy as np
 import common.ml as ml
 import common.pz as pz
@@ -114,10 +115,84 @@ def embed_all(directory):
     # 3. convert matrix to binary
     print '[SC] Converting python list to numpy matrix...'
     matrix = np.array(matrix, dtype=np.int16)
-    print '[SC] Converting features vectors to binary...'
-    matrix, m = ml.make_binary(matrix)
+    save_as_arff(matrix, truth_label)
+    # print '[SC] Converting features vectors to binary...'
+    # matrix, m = ml.make_binary(matrix)
 
     return matrix, m, truth_label, filename_list
+
+def binary_add(x,y):
+        maxlen = max(len(x), len(y))
+
+        #Normalize lengths
+        x = x.zfill(maxlen)
+        y = y.zfill(maxlen)
+
+        result = ''
+        carry = 0
+
+        for i in range(maxlen-1, -1, -1):
+            r = carry
+            r += 1 if x[i] == '1' else 0
+            r += 1 if y[i] == '1' else 0
+
+            # r can be 0,1,2,3 (carry + x[i] + y[i])
+            # and among these, for r==1 and r==3 you will have result bit = 1
+            # for r==2 and r==3 you will have carry = 1
+
+            result = ('1' if r % 2 == 1 else '0') + result
+            carry = 0 if r < 2 else 1       
+
+        if carry !=0 : result = '1' + result
+
+        return result.zfill(maxlen)
+
+def test():
+    matrix = []
+    X = np.zeros(2 ** 15)
+    X[0] = 15
+    X[10000] = 11
+    X_2 = np.zeros(2 ** 15)
+    X_2[3] = 44
+    X_2[89] = 34
+    matrix.append(X)
+    matrix.append(X_2)
+    matrix = np.array(matrix, dtype=np.int16)
+    Y = np.array([])
+    Y = np.append(Y, 'class_one')
+    Y = np.append(Y, 'class_two')
+    save_as_arff(matrix, Y)
+
+def save_as_arff(X, Y):
+    category_set = set()
+    for category in Y:
+        category_set.add(category)
+    N, M = X.shape
+    f = open('weka.arff', 'w')
+    f.write('@relation neighborhood hash\n\n')
+    nh = ''
+    for i in range(int(math.log(M, 2))):
+        nh += '0'
+    f.write('@attribute ' + nh + ' numeric\n')
+    for i in range(M):
+        nh = binary_add(nh, '1')
+        f.write('@attribute ' + nh + ' numeric\n')
+    f.write('@attribute classes {')
+    cnt = 0
+    for category in category_set:
+        if cnt < len(category_set) - 1:
+            f.write(category + ',')
+        else:
+            f.write(category)
+        cnt += 1
+    f.write('}\n')
+    f.write('\n@data\n')
+    for i in range(N):
+        f.write('{')
+        for j in range(M):
+            if X[i, j] != 0:
+                f.write('%d %d,' % (j, X[i,j]))
+        f.write('%d %s}\n' % (M, Y[i]))
 
 def save_data(X, m, Y, filenames):
     '''Store pz objects for the data matrix, the labels and
@@ -137,7 +212,7 @@ def main():
     if args.directory:
         remove_emtpy_hcg(args.directory)
         matrix, m, truth_label, filename_list = embed_all(args.directory)
-        save_data(matrix, m, truth_label, filename_list,)
+        # save_data(matrix, m, truth_label, filename_list,)
     else:
         parser.print_help()
 
