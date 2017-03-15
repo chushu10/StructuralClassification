@@ -93,6 +93,7 @@ def embed_all(directory):
     #    record filenames in filename_list also
     matrix = []
     truth_label = np.array([])
+    category_label = np.array([])
     filename_list = []
     for parent, dirnames, filenames in os.walk(directory):
         for filename in filenames:
@@ -100,6 +101,7 @@ def embed_all(directory):
             # if filename == 'hcg.json':
                 category = os.path.basename(os.path.split(os.path.split(parent)[0])[0])
                 truth_label = np.append(truth_label, category_dict[category])
+                category_label = np.append(category_label, category)
                 hcg = read_hashed_call_graph(os.path.join(parent, filename))
                 x_i = compute_label_histogram(hcg)
                 matrix.append(x_i)
@@ -115,9 +117,10 @@ def embed_all(directory):
     # 3. convert matrix to binary
     print '[SC] Converting python list to numpy matrix...'
     matrix = np.array(matrix, dtype=np.int16)
-    save_as_arff(matrix, truth_label)
+    save_as_arff(matrix, category_label)
     # print '[SC] Converting features vectors to binary...'
     # matrix, m = ml.make_binary(matrix)
+    m = 0
 
     return matrix, m, truth_label, filename_list
 
@@ -169,7 +172,7 @@ def save_as_arff(X, Y):
         category_set.add(category)
     N, M = X.shape
     f = open('weka.arff', 'w')
-    f.write('@relation neighborhood hash\n\n')
+    f.write('@relation neighborhood_hash\n\n')
     nh = ''
     for i in range(int(math.log(M, 2))):
         nh += '0'
@@ -180,6 +183,7 @@ def save_as_arff(X, Y):
     f.write('@attribute classes {')
     cnt = 0
     for category in category_set:
+        print category
         if cnt < len(category_set) - 1:
             f.write(category + ',')
         else:
