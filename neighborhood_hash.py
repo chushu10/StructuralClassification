@@ -59,7 +59,10 @@ def main():
     parser.add_argument('-p', '--apkpath', help='path of the apk')
     args = parser.parse_args()
     if args.apkpath:
+        start_time = time.time()
         cg, graphdir = generate(args.apkpath)
+        cost_time = time.time() - start_time
+        print('Graph generation costs' + str(cost_time) + ' seconds.')
         start_time = time.time()
         hash_cg = neighborhood_hash(cg, graphdir)
         cost_time = time.time() - start_time
