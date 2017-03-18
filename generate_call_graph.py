@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os, argparse, json, re
+import os, argparse, json, re, time
 from command import *
 from common.utils import merge_two_dicts
 from smali_opcode import INSTRUCTION_SET_COLOR
@@ -130,7 +130,10 @@ def main():
     parser.add_argument('-p', '--apkpath', help='path of the apk')
     args = parser.parse_args()
     if args.apkpath:
+        start_time = time.time()
         cg, graphdir = generate(args.apkpath)
+        cost_time = time.time() - start_time
+        print('costs' + str(cost_time) + ' seconds.')
         save_to_file(cg, graphdir)
     else:
         parser.print_help()

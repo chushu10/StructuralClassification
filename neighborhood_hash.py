@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import argparse, json, os
+import argparse, json, os, time
 from generate_call_graph import generate
 from smali_opcode import HCG_FILE_NAME
 
@@ -60,7 +60,10 @@ def main():
     args = parser.parse_args()
     if args.apkpath:
         cg, graphdir = generate(args.apkpath)
+        start_time = time.time()
         hash_cg = neighborhood_hash(cg, graphdir)
+        cost_time = time.time() - start_time
+        print('NHGK costs' + str(cost_time) + ' seconds.')
         save_to_file(hash_cg, graphdir)
     else:
         parser.print_help()
