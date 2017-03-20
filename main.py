@@ -26,6 +26,10 @@ def main():
         max_file_size = 0
         min_node_count = sys.maxint
         max_node_count = 0
+        min_graph_time = sys.maxint
+        max_graph_time = 0
+        min_hash_time = sys.maxint
+        max_hash_time = 0
         for parent, dirnames, filenames in os.walk(args.directory):
             for filename in filenames:
                 if filename.endswith('.apk'):
@@ -61,6 +65,14 @@ def main():
                         min_file_size = file_size
                     if len(cg) < min_node_count:
                         min_node_count = len(cg)
+                    if graph_time > max_graph_time:
+                        max_graph_time = graph_time
+                    if graph_time < min_graph_time:
+                        min_graph_time = graph_time
+                    if hash_time > max_hash_time:
+                        max_hash_time = hash_time
+                    if hash_time < min_hash_time:
+                        min_hash_time = hash_time
 
                     # progressbar
                     progress += 1
@@ -81,6 +93,10 @@ def main():
         f.write('min file size:%f\n' % (min_file_size/(10**6)) )
         f.write('max node count:%d\n' % max_node_count)
         f.write('min node count:%d\n' % min_node_count)
+        f.write('max graph time:%f\n' % max_graph_time)
+        f.write('min graph time:%f\n' % min_graph_time)
+        f.write('max hash time:%f\n' % max_hash_time)
+        f.write('min hash time:%f\n' % min_hash_time)
         f.write('graph generation(size):\n')
         for gtc in graph_time_list:
             f.write(str(gtc))
