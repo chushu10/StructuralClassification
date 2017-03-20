@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import argparse, os
+from __future__ import division
+import argparse, os, time, sys
 from generate_call_graph import generate
 from neighborhood_hash import neighborhood_hash, save_to_file
 from common.utils import use_progressbar
@@ -17,13 +18,49 @@ def main():
         pbar.start()
         progress = 0
 
+        graph_time_list = []
+        hash_time_list = []
+        graph_node_time_list = []
+        hash_node_time_list = []
+        min_file_size = sys.maxint
+        max_file_size = 0
+        min_node_count = sys.maxint
+        max_node_count = 0
         for parent, dirnames, filenames in os.walk(args.directory):
             for filename in filenames:
                 if filename.endswith('.apk'):
-                    # print(os.path.join(parent, filename))
-                    cg, graphdir = generate(os.path.join(parent, filename))
+                    apk_file = os.path.join(parent, filename)
+                    # check file size
+                    file_size = os.stat(apk_file).st_size
+
+                    # graph generation and neighborhood hash
+                    start_time = time.time()
+                    cg, graphdir = generate(apk_file)
+                    graph_time = time.time() - start_time
+
+                    start_time = time.time()
                     hash_cg = neighborhood_hash(cg, graphdir)
+                    hash_time = time.time() - start_time
+
                     save_to_file(hash_cg, graphdir)
+
+                    graph_time_coordinate = (file_size/(10**6), graph_time)
+                    hash_time_coordinate = (file_size/(10**6), hash_time)
+                    graph_node_time_coordinate = (len(cg), graph_time)
+                    hash_node_time_coordinate = (len(cg), hash_time)
+                    graph_time_list.append(graph_time_coordinate)
+                    hash_time_list.append(hash_time_coordinate)
+                    graph_node_time_list.append(graph_node_time_coordinate)
+                    hash_node_time_list.append(hash_node_time_coordinate)
+
+                    if file_size > max_file_size:
+                        max_file_size = file_size
+                    if len(cg) > max_node_count:
+                        max_node_count = len(cg)
+                    if file_size < min_file_size:
+                        min_file_size = file_size
+                    if len(cg) < min_node_count:
+                        min_node_count = len(cg)
 
                     # progressbar
                     progress += 1
@@ -31,6 +68,35 @@ def main():
 
         # progressbar
         pbar.finish()
+
+        # sort list
+        graph_time_list.sort(key=lambda tup: tup[0])
+        hash_time_list.sort(key=lambda tup: tup[0])
+        graph_node_time_list.sort(key=lambda tup: tup[0])
+        hash_node_time_list.sort(key=lambda tup: tup[0])
+
+        # save time consumption
+        f = open(os.path.join(args.directory,'time_evaluation'), 'w')
+        f.write('max file size:%f\n' % (max_file_size/(10**6)) )
+        f.write('min file size:%f\n' % (min_file_size/(10**6)) )
+        f.write('max node count:%d\n' % max_node_count)
+        f.write('min node count:%d\n' % min_node_count)
+        f.write('graph generation(size):\n')
+        for gtc in graph_time_list:
+            f.write(str(gtc))
+
+        f.write('\nneighborhood hash(size):\n')
+        for htc in hash_time_list:
+            f.write(str(htc))
+
+        f.write('\ngraph generation(node):\n')
+        for gntc in graph_node_time_list:
+            f.write(str(gntc))
+
+        f.write('\nneighborhood hash(node):\n')
+        for hntc in hash_node_time_list:
+            f.write(str(hntc))
+        f.close()
     else:
         parser.print_help()
 
