@@ -6,10 +6,11 @@ import common.ml as ml
 import common.pz as pz
 import json, argparse, os, arff
 from common.utils import use_progressbar, count_file, read_hashed_call_graph
+from smali_opcode import HCG_FILE_NAME
 
 def remove_emtpy_hcg(directory):
     # progressbar
-    file_count = count_file(directory, '_hcg.json')
+    file_count = count_file(directory, HCG_FILE_NAME)
     pbar = use_progressbar('Removing empty hcgs...', file_count)
     pbar.start()
     progress = 0
@@ -18,8 +19,7 @@ def remove_emtpy_hcg(directory):
     count = 0
     for parent, dirnames, filenames in os.walk(directory):
         for filename in filenames:
-            if filename == 'directed_hcg.json':
-            # if filename == 'hcg.json':
+            if filename == HCG_FILE_NAME:
                 hcg_file = os.path.join(parent, filename)
                 statinfo = os.stat(hcg_file)
                 hcg_size = statinfo.st_size
@@ -51,7 +51,7 @@ def compute_label_histogram(hcg):
 def get_categories(directory):
     '''get category dict'''
     # progressbar
-    file_count = count_file(directory, '_hcg.json')
+    file_count = count_file(directory, HCG_FILE_NAME)
     pbar = use_progressbar('Get categories...', file_count)
     pbar.start()
     progress = 0
@@ -60,8 +60,7 @@ def get_categories(directory):
     category_index = 0
     for parent, dirnames, filenames in os.walk(directory):
         for filename in filenames:
-            if filename == 'directed_hcg.json':
-            # if filename == 'hcg.json':
+            if filename == HCG_FILE_NAME:
                 category = os.path.basename(os.path.split(os.path.split(parent)[0])[0])
                 if category not in category_dict:
                     category_dict[category] = category_index
@@ -83,7 +82,7 @@ def embed_all(directory):
     category_dict = get_categories(directory)
 
     # progressbar
-    file_count = count_file(directory, '_hcg.json')
+    file_count = count_file(directory, HCG_FILE_NAME)
     pbar = use_progressbar('Computing label histogram...', file_count)
     pbar.start()
     progress = 0
@@ -97,8 +96,7 @@ def embed_all(directory):
     filename_list = []
     for parent, dirnames, filenames in os.walk(directory):
         for filename in filenames:
-            if filename == 'directed_hcg.json':
-            # if filename == 'hcg.json':
+            if filename == HCG_FILE_NAME:
                 category = os.path.basename(os.path.split(os.path.split(parent)[0])[0])
                 truth_label = np.append(truth_label, category_dict[category])
                 category_label = np.append(category_label, category)
@@ -167,6 +165,7 @@ def test():
     save_as_arff(matrix, Y)
 
 def save_as_arff(X, Y):
+    print '[SC] Saving as arff file...'
     category_set = set()
     for category in Y:
         category_set.add(category)
