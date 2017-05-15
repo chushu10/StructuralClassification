@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os, argparse, json
 from common.utils import use_progressbar, count_file
+from smali_opcode import HCG_FILE_NAME
 
 def merge_hash_dict(d1, d2):
     '''merge d1 into d2'''
@@ -45,7 +46,7 @@ def count(directory):
     # 3. merge the hash values into one file
 
     # progressbar
-    file_count = count_file(directory, '_hcg.json')
+    file_count = count_file(directory, HCG_FILE_NAME)
     pbar = use_progressbar('Calculating maximum occurrence', file_count)
     pbar.start()
     progress = 0
@@ -53,7 +54,7 @@ def count(directory):
     hash_dict = dict()
     for parent, dirnames, filenames in os.walk(directory):
         for filename in filenames:
-            if filename == 'directed_hcg.json':
+            if filename == HCG_FILE_NAME:
             # if filename == 'hcg.json':
                 hash_dict = merge_hash_dict(get_hash(os.path.join(parent, filename)), hash_dict)
 
